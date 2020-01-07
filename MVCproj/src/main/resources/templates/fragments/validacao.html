@@ -1,0 +1,27 @@
+<html>
+	<head><meta charset="UTF-8"></head>
+	<body>
+		<!-- se houver algum erro em alum dos campos que foram validados e foram
+			reprovados na validação. Para isso o tymeleaf nos fornece uma expressão
+			utilitária ao objetos fields, que possui método hasAnyErrors(), que verifica
+			se alguns dos camposque foram validadosna submissão do formulário, possui
+			um erro de validação, ou seja, não passaram no teste das validações.
+			Se existir então algum campo que não passou na validação, esse fragmento
+			deverá aparecer na página exibindo a as mensagens de validação -->
+		<div th:if="${#fields.hasAnyErrors()}" th:fragment="validacao">
+			<div class="alert alert-danger alert-dismissible fade show" role="alert">
+				<!-- para que possamos exibir as mensagens na página, deve se acessar 
+					um método do objeto fields chamado detailed errors e neste método
+					é onde teremos cada um dos erros das validações. Cada posição desse
+					detailedErrors  -->
+				<div th:each="error : ${#fields.detailedErrors()}">
+					<i class="oi oi-warning"></i>
+					<span th:text="${error.message}"></span>
+				</div>
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+		</div>
+	</body>
+</html>

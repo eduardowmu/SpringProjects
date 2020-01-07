@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<!-- xmlns:th="http://www.thymeleaf.org" Este name space tem todos os componentes do thymeleaf para trabalhar nas páginas,
+	tanto as partes de fragmento de páginas como todos os componentes para se trabalhar com formulários, lista de dados
+	e entre outros-->
+<html lang="pt" xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"><!-- Esta name espace traz todos os recursos 
+																mais avançados para que possamos trabalhar mais facilmente
+																principalmente com layouts para páginas dinâmicas -->
+	<!-- para termos didáticos, acessar www.thymeleaf.org -->
+	<head>
+		<title>Spring-Boot Básico</title>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+		<meta name="description" content="" />
+		<meta name="author" content="" />
+		<link rel="icon" href="/image/favicon.png" />
+	
+		<!-- Bootstrap core CSS -->
+		<link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet" />
+		<link th:href="@{/webjars/open-iconic/font/css/open-iconic-bootstrap.min.css}" rel="stylesheet" />
+		
+		<!-- Custom styles for this template -->
+		<link th:href="@{/css/style.css}" rel="stylesheet" />
+	</head>
+	<body>
+		<header th:replace="fragments/header::cabecalho">
+			<div>header</div>
+		</header>
+		<div class="layout-main">
+			<aside>
+				<nav th:replace="fragments/sidebar::nav-sidebar">
+					<span>menu</span>
+				</nav>
+			</aside>
+			<section layout:fragment="corpo">
+				<div>Conteudo principal das páginas</div>
+			</section>
+		</div>
+		<footer>
+			<!-- onde está localizado o footer template. "fragments" é o diretório
+				e o footer é o nome da página e o rodapé foi o nome dado ao
+				modelo -->
+			<div th:replace="fragments/footer :: rodape">footer</div>
+		</footer>
+		<!-- Bootstrap core JavaScript
+	    ================================================== -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+		<script th:src="@{/webjars/jquery-mask-plugin/dist/jquery.mask.min.js}"></script>
+		<!-- Este script não terá o th: do thymelieaf pois já direciona para um link HTTP -->
+		<script	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+		<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+		<script type="text/javascript">
+		    var url = '';
+		    
+		    $('button[id*="btn_"]').click(function()
+		    {url = "http://localhost:8080/" + $(this).attr('id').split("_")[1];});
+		    
+		    //passando a URL para o botão de confirmação do JQUERY
+		    $('#ok_confirm').click(function()
+		    {	//irá fazer a solicitação para o servidor, a partir da URL atribuída
+		    	document.location.href = url;
+		    });
+			
+			$(function() {$('[data-toggle="popover"]').popover();});
+			
+			$(document).ready(function()
+			{	$(".navbar-toggle").click(function()
+				{$(".sidebar").toggleClass("sidebar-open");})
+			});
+		</script>
+	</body>
+</html>
