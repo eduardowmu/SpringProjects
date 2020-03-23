@@ -6,7 +6,7 @@ import com.apirest.webflux.document.Playlist;
 import com.apirest.webflux.repository.PlaylistRepository;
 import reactor.core.publisher.Flux;
 /*
-@Component
+@Component//essa notação faz com que esta classe seja um BEAN gerenciado pelo SPRING
 public class DummyData implements CommandLineRunner
 {	//Playlist como atributo
 	private final PlaylistRepository playlistRepository;

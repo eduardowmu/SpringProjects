@@ -13,7 +13,8 @@ public class Playlist
 	private String nome;
 	
 	public Playlist(String id, String nome) 
-	{	this.id = id;
+	{	super();
+		this.id = id;
 		this.nome = nome;
 	}
 	

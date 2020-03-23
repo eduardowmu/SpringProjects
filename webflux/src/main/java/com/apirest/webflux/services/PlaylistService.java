@@ -16,8 +16,6 @@ public class PlaylistService implements IPlaylistService
 	@Autowired PlaylistRepository playRepository;
 	
 	@Override public Flux<Playlist> findAll() {return this.playRepository.findAll();}
-
 	@Override public Mono<Playlist> findById(String id) {return this.playRepository.findById(id);}
-
 	@Override public Mono<Playlist> save(Playlist playlist)	{return this.playRepository.save(playlist);}
 }
