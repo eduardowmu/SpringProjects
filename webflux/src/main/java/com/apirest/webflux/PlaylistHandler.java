@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 /*essa notação servirá para mostrar que é um Bean que vai ser gerenciado pelo
 Spring framework
 */
-@Component
+//@Component
 public class PlaylistHandler 
 {	/*criar um pto de injeção na playlist service para que possamos então usar
  	os métodos de transação com o banco*/
