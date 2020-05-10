@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+<body>
+
+	<div class="corpo" layout:fragment="corpo">
+		<!-- datatables.net. a classe nowrap fará com que cada coluna tenha 
+			no maximo a maior largura referente a esta tabela. Para resolver
+			o problema de responsividade será resolvido na página de 
+			datatables.net/extensions/index. Além disso precisaremos inserir
+			dois arquivos: 1 css e um js que vão lidar com essa parte de
+			responsividade, através do link chamado individual-files na
+			mesma página, onde encontraremos o item "Responsive" e inserir
+			<link></link> e <script></script> direcionando para os links que
+			encontrarmos para cada extensão.-->
+		<table id="table-server" class="display nowrap" style="width:100%">
+		  <thead class="thead-dark">
+		    <tr>
+		      <th scope="col">#</th>
+		      <th scope="col">Titulo</th>
+		      <th scope="col">Site</th>
+		      <th scope="col">Link Promoção</th>
+		      <th scope="col">Descrição</th>
+		      <th scope="col">Link Imagem</th>
+		      <th scope="col">Preço</th>
+		      <th scope="col">Likes</th>
+		      <th scope="col">Data de Cadastro</th>
+		      <th scope="col">Categoria</th>
+		    </tr>
+		  </thead>
+		</table>
+        <div th:replace="promo-datatables-modal :: modal-form"></div>
+        <div th:replace="promo-datatables-modal-del :: modal-delete"></div>
+	</div>
+
+	<script th:src="@{/js/promo-datatables.js}" th:fragment="js"></script>
+</body>
+</html>

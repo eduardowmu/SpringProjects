@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:dwr="http://www.directwebremoting.org/schema/spring-dwr"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.directwebremoting.org/schema/spring-dwr
+    http://www.directwebremoting.org/schema/spring-dwr-3.0.xsd">
+    
+    <!-- Esta tag serve para informar ao spring que aqui 
+    nós temos um arquivo de configuração, onde vamos 
+    tranformar então as informações que temos em um bean
+    gerenciado pelo spring. Desta forma o recurso da DWR 
+    passa a ser o bean gerenciado pelo spring. É a mesma
+    coisa como se estivessemos usando anotações configuration
+    sobre uma classe de configuração no nosso cósigo java-->
+    <dwr:configuration></dwr:configuration>
+    
+    <!-- Esta é a tag, possui alguns atributos, como o base-package,
+    que temos que informar quais as classes que temos que desenvolver
+    para trabalhar com a DWR dentro do seu projeto. Portanto é necessário
+    informar essa informação para a própria DWR saber onde ela deve procurar
+    por essas classes. -->
+    <dwr:annotation-scan base-package="com.edu.demoajax.web.dwr"/>
+    
+    <!-- essa tag tem como função dizer para o DWR que vamos fazer uso
+    de anotações ao invés de configurações quando formos trabalhar com a classe
+    da DWR.-->
+    <dwr:annotation-config></dwr:annotation-config>
+</beans>

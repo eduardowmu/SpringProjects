@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: demo-ajax
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: vilt-
+Implementation-Vendor-Id: com.mballem
+Build-Jdk: 1.8.0_211
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/demo-ajax
+Created-By: Maven Integration for Eclipse
+
