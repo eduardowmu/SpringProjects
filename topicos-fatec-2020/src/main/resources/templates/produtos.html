@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head><title>Produtos</title></head>
+	<body><h3><b>Produtos</b></h3>
+		<table border="1">
+			<thead>
+				<tr>
+					<th>Excluir</th>
+					<th>Nome</th>
+					<th>Descricao</th>
+					<th>Preco</th>
+					<th>Alterar</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="produto : ${produtos}">
+					<td>Excluir</td>
+					<td th:text="${produto.name}">Nome</td>
+					<td th:text="${produto.description}">Descricao</td>
+					<td th:text="${produto.price}">Preco</td>
+					<td>Alterar</td>
+				</tr>
+			</tbody>
+		</table>
+		<hr>
+		<form action="/produtos/inserir" method="post">
+			<label for="name">Nome: </label><input type="text" id="name" name="name"/>
+			<label for="description">Descricao: </label><input type="text" id="description" name="description"/>
+			<label for="price">Preco: </label><input type="text" id="price" name="price"/>
+			<button type="submit" >Enviar</button>	
+		</form>
+	</body>
+</html>
