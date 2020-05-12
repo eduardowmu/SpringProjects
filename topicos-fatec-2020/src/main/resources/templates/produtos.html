@@ -14,20 +14,22 @@
 			</thead>
 			<tbody>
 				<tr th:each="produto : ${produtos}">
-					<td>Excluir</td>
+					<td><a th:href="${'/produtos/excluir?id=' + produto.id}">Excluir</a></td>
 					<td th:text="${produto.name}">Nome</td>
 					<td th:text="${produto.description}">Descricao</td>
 					<td th:text="${produto.price}">Preco</td>
-					<td>Alterar</td>
+					<td><a th:href="${'/produtos/preAlteracao?id=' + produto.id}">Alterar</a></td>
 				</tr>
 			</tbody>
 		</table>
 		<hr>
-		<form action="/produtos/inserir" method="post">
-			<label for="name">Nome: </label><input type="text" id="name" name="name"/>
-			<label for="description">Descricao: </label><input type="text" id="description" name="description"/>
-			<label for="price">Preco: </label><input type="text" id="price" name="price"/>
-			<button type="submit" >Enviar</button>	
+		<form action="/produtos/inserir" method="post" th:object="${produtoEditavel}">
+			<!-- essa tag hidden será o id do produto necessário para identificar no GET por id qual produto queremos alterar -->
+			<input type="hidden" name="id" th:field="*{id}"/>
+			<label for="name">Nome: </label><input type="text" id="name" name="name" th:field="*{name}"/>
+			<label for="description">Descricao: </label><input type="text" id="description" name="description" th:field="*{description}"/>
+			<label for="price">Preco: </label><input type="text" id="price" name="price" th:field="*{price}"/>
+			<button type="submit" id="salvar">Enviar</button>	
 		</form>
 	</body>
 </html>
