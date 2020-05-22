@@ -10,6 +10,7 @@
 					<th>Descricao</th>
 					<th>Preco</th>
 					<th>Alterar</th>
+					<th>Add ao carrinho</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -19,6 +20,7 @@
 					<td th:text="${produto.description}">Descricao</td>
 					<td th:text="${produto.price}">Preco</td>
 					<td><a th:href="${'/produtos/preAlteracao?id=' + produto.id}">Alterar</a></td>
+					<td><a th:href="${'/carrinho/add?id=' + produto.id}">Add</a></td>
 				</tr>
 			</tbody>
 		</table>
