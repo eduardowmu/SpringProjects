@@ -23,7 +23,26 @@ public class SecurityConfig extends
 			//significa que tal URI não irá precisar de
 			//autenticação
 			.permitAll()
-			.anyRequest().authenticated();
+			.anyRequest().authenticated()
+			//concatenação
+			.and()
+				//formulário de login
+				.formLogin()
+				.loginPage("/login")
+				//metodo que define para onde a aplicação deve te 
+				//direcionar quando tivermos sucesso na operação
+				//de login. NO caso, direcionando para qq outra
+				//página da nossa aplicação.
+				.defaultSuccessUrl("/", true)
+				//mas se falhar a autenticação
+				.failureUrl("/login-error")
+				//obriga que todos os usuarios tenha permissão para
+				//acessar a página de login e a de erro
+				.permitAll()
+			.and()
+				.logout()
+				.logoutSuccessUrl("/");
+			
 		//super.configure(http);
 	}	
 }
