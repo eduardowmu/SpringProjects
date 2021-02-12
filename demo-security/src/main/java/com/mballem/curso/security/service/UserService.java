@@ -22,11 +22,23 @@ public class UserService implements UserDetailsService
 	//método que busca o usuario, que busca o retorno
 	//do repositório.
 	//a notação faz parte do processo de transações do
-	//spring
+	//spring. Este valor true significa que esta sendo
+	//gerenciado pelo processo de transação do spring.
+	//quando temos o retorno do objeto usuário, esse
+	//esse sistema de transações que gerenciou o método
+	//buscar por e-mail é encerrado, quando utilizamos
+	//o método getPerfis() abaixo dentro do loadUserByUsername
+	//como o sistema transacional do spring ja encerrou
+	//com o método buscar por e-mail, não temos mais acesso
+	//a aquela sessão que foi criado com banco de dados
+	//então, não consegue voltar com o banco de dados e trazer
+	//a lista de perfis.
 	@Transactional(readOnly = true)
 	public Usuario pullByEmail(String email)
 	{return this.userRepository.findByEmail(email);}
-
+	
+	/*Para solucionar esse problema, adicionamos essa notação também*/
+	@Transactional(readOnly = true)
 	@Override public UserDetails loadUserByUsername(String username) 
 			throws UsernameNotFoundException 
 	{	//obtendo a resposta da nossa consulta

@@ -11,6 +11,6 @@ mais a frente, o spring vai pegar nossa consulta pelo email e depois
 mesmo testa a senha vamos agora, criar aqui no pacote service a classe
 usuario senha service*/
 public interface UserRepository extends JpaRepository<Usuario, Long> 
-{	@Query("select u from Usuario u where u.email")
+{	@Query("select u from Usuario u where u.email like :email")
 	Usuario findByEmail(@Param("email") String email);
 }
