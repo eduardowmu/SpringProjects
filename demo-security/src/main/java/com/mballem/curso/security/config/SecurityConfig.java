@@ -31,6 +31,10 @@ public class SecurityConfig extends
 			//significa que tal URI não irá precisar de
 			//autenticação
 			.permitAll()
+			//adicionar acessos privados para o ADMIN
+			.antMatchers("/u/**").hasAuthority("ADMIN")
+			//acessos privados medicos
+			.antMatchers("/medicos/**").hasAuthority("MEDICO")
 			.anyRequest().authenticated()
 			//concatenação
 			.and()
@@ -71,7 +75,5 @@ public class SecurityConfig extends
 			 *para ver se essa criptografia é igual aquela que
 			 *temos no BD*/
 			.passwordEncoder(new BCryptPasswordEncoder());
-	}
-	
-	
+	}	
 }

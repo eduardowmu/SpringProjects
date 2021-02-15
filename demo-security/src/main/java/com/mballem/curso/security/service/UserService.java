@@ -41,7 +41,10 @@ public class UserService implements UserDetailsService
 	@Transactional(readOnly = true)
 	@Override public UserDetails loadUserByUsername(String username) 
 			throws UsernameNotFoundException 
-	{	//obtendo a resposta da nossa consulta
+	{	//obtendo a resposta da nossa consulta. Um objeto que fica
+		//na sessão e a partir deste objeto, o spring secuirty consegue
+		//comparar se o perfil do objeto que está na sessão é igual ao
+		//perfil que estamos dando a autorização em cada uma das URLs.
 		Usuario usuario = this.pullByEmail(username);
 		
 		/*User é uma classe do Spring que implementa 
