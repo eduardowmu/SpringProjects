@@ -13,7 +13,5 @@ public class MedicoController
 {	//abrir pagina de dados pessoais de medicos pelo MEDICO
 	@GetMapping({"/dados"})
 	public String abrirPorMedico(Medico medico, ModelMap model)
-	{
-		return "medico/cadastro";
-	}
+	{return "medico/cadastro";}
 }
