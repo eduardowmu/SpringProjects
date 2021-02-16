@@ -53,8 +53,15 @@ public class SecurityConfig extends
 				.permitAll()
 			.and()
 				.logout()
-				.logoutSuccessUrl("/");
-			
+				.logoutSuccessUrl("/")
+			.and()
+			/*Capturando a exceção quando tivermos um acesso negado
+			 *Estamos então dizendo para o Spring Security que queremos
+			 *capturar a exceção, que deve ser a exceção do tipo access
+			 *denied exception. Então automaticamente o Spring vai capturar
+			 *esse tipo de exceção e vai enviar um redirecionamento lá para
+			 *o método que vamos criar na controller.*/
+			.exceptionHandling().accessDeniedPage("/acesso-negado");
 		//super.configure(http);
 	}
 
