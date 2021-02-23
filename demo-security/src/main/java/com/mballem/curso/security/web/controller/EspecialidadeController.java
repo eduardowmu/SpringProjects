@@ -5,7 +5,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -37,5 +39,21 @@ public class EspecialidadeController
 			HttpServletRequest request)
 	{	return ResponseEntity.ok(
 			this.service.buscarEspecialidades(request));
+	}
+	
+	/*O primeiro método será aquele que irá receber a
+	 *requisição para edição, através do ID, envia os dados
+	 *para os campos de edição do formulário.*/
+	@GetMapping({"/editar/{id}"})/*path variable para capturar o ID*/
+	public String preEditar(@PathVariable("id") Long id, ModelMap model)
+	{	model.addAttribute("especialidade", this.service.buscarPorId(id));
+		return "especialidade/especialidade";
+	}
+	
+	@GetMapping({"/excluir/{id}"})/*path variable para capturar o ID*/
+	public String excluir(@PathVariable("id") Long id, RedirectAttributes attr)
+	{	this.service.removerPorId(id);
+		attr.addFlashAttribute("Sucesso", "Operação realizada com sucesso");
+		return "redirect:/especialidades";
 	}
 }

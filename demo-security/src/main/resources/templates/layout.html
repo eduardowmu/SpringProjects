@@ -70,10 +70,14 @@
 			url = $(this).attr('href');
 		});
 		
+		/*Envio de requisição pela URL para o
+		Controller por AJAX*/
 		$("#btnOk").on('click', function() {
 			document.location.href = url;
 		});
 		
+		/*quando o botão for clicado, limpamos nossa
+		variável url*/
 		$("#btnCancel").on('click', function() {
 			url = '';
 		});		

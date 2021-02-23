@@ -42,4 +42,16 @@ public class EspecialidadeService
 				this.dataTables.getPageable());
 		return this.dataTables.getResponse(page);
 	}
+	
+	@Transactional(readOnly=true)
+	public Especialidade buscarPorId(Long id) 
+	{	/*O método findById() retorna um Optional<T>
+	 	que no caso, o T = Especialidade. Portanto,
+	 	devemos usar o método get() para retornarmos
+	 	o objeto do tipo desejado, ou seja, Especialidade*/
+		return this.repository.findById(id).get();
+	}
+	
+	@Transactional(readOnly=false)
+	public void removerPorId(Long id) {this.repository.deleteById(id);}
 }
