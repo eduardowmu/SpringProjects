@@ -13,4 +13,6 @@ public class UserController
 	@GetMapping("/novo/cadastro/usuario")
 	public String cadastroPorAdminParaAdminMedicoPaciente(Usuario usuario)
 	{return "usuario/cadastro";}
+	
+	
 }
