@@ -7,12 +7,19 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.mballem.curso.security.domain.PerfilTipo;
 import com.mballem.curso.security.service.UserService;
 
 @EnableWebSecurity
 public class SecurityConfig extends 
 	WebSecurityConfigurerAdapter
-{	//injeção de dependencias
+{	//criado com a intensão de evitar de escrever STRINGS direto
+	private static final String ADMIN = PerfilTipo.ADMIN.getDesc();
+	private static final String MEDICO = PerfilTipo.MEDICO.getDesc();
+	private static final String PACIENTE = PerfilTipo.PACIENTE.getDesc();
+
+	
+	//injeção de dependencias
 	@Autowired private UserService usuarioService;
 	
 	@Override protected void configure(HttpSecurity http) 
@@ -32,9 +39,13 @@ public class SecurityConfig extends
 			//autenticação
 			.permitAll()
 			//adicionar acessos privados para o ADMIN
-			.antMatchers("/u/**").hasAuthority("ADMIN")
+			.antMatchers("/u/**").hasAuthority(ADMIN)
 			//acessos privados medicos
-			.antMatchers("/medicos/**").hasAuthority("MEDICO")
+			.antMatchers("/medicos/**").hasAuthority(MEDICO)
+			//acesso privados especialidades
+			.antMatchers("/especialidades/**").hasAuthority(ADMIN)
+			//acesso privados pacientes
+			.antMatchers("/pacientes/**").hasAuthority(PACIENTE)
 			.anyRequest().authenticated()
 			//concatenação
 			.and()

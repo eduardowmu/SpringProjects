@@ -1,16 +1,23 @@
 package com.mballem.curso.security.service;
 
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.mballem.curso.security.datatables.Datatables;
+import com.mballem.curso.security.datatables.DatatablesColunas;
 import com.mballem.curso.security.domain.Perfil;
 import com.mballem.curso.security.domain.Usuario;
 import com.mballem.curso.security.repository.UserRepository;
@@ -18,6 +25,8 @@ import com.mballem.curso.security.repository.UserRepository;
 @Service
 public class UserService implements UserDetailsService
 {	@Autowired private UserRepository userRepository;
+
+	@Autowired private Datatables dataTables;
 	
 	//método que busca o usuario, que busca o retorno
 	//do repositório.
@@ -67,4 +76,41 @@ public class UserService implements UserDetailsService
 		
 		return authorities;
 	}
+	
+	/*Começando a trabalhar com DataTables*/
+	@Transactional(readOnly = true)
+	public Map<String, Object> bucarUsuarios(HttpServletRequest request) 
+	{	this.dataTables.setRequest(request);
+		this.dataTables.setColunas(DatatablesColunas.USUARIOS);
+		/*Trabalhando com objeto page, que é o resultado
+		 *que obteremos a partir da consulta que será feita
+		 *via spring data JPA*/
+		Page<Usuario> page = this.dataTables.getSearch().isEmpty() ?
+		/*se estiver vazio, faremos uma consulta básica do tipo findAll()
+		 *que fará apenas ter recursos de paginação e ordenação.*/
+				this.userRepository.findAll(this.dataTables.getPageable()) :
+				/*se não, teremos um parametro, que servirá de filtro, 
+				 *que será para que possamos filtrar nossos usuarios*/
+				this.userRepository.findByEmailOrPerfil(
+						this.dataTables.getSearch(), 
+						this.dataTables.getPageable());
+		return this.dataTables.getResponse(page);
+	}
+
+	@Transactional(readOnly = false)
+	public void save(Usuario usuario) 
+	{	/*Antes de salvar, precisamos criptografar a senha do usuário*/
+		String cryptPass = new BCryptPasswordEncoder().encode(
+			usuario.getSenha());
+		usuario.setSenha(cryptPass);
+		this.userRepository.save(usuario);
+	}
+	
+	@Transactional(readOnly = true)
+	public Usuario findById(Long id) 
+	{return this.userRepository.findById(id).get();}
+	
+	@Transactional(readOnly = true)
+	public Usuario findByIdAndPerfis(Long id, Long[] perfis) 
+	{return this.userRepository.findByIdAndProfile(id, perfis);}
 }

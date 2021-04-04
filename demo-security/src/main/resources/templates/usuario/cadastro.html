@@ -17,7 +17,7 @@
 				<p class="lead text-muted">Médicos e Especialistas</p>
 			</div>
 		</section>
-
+		
 		<div class="album py-5 bg-light">
 			<div class="container">
 
@@ -58,7 +58,12 @@
 									<option value="2">Médico</option>
 									<option value="3">Paciente</option>
 								</select>
-
+								<!-- Criação de um input para caso em que é selecionado
+								apenas uma opção. O atributo name deve ter o mesmo valor
+								do ID do select pois o th:field quando for transformado em
+								HTML para ser aberto depois na página vai criar um então
+								um name perfis -->
+								<input type="hidden" name="perfis" value="0"/>
 								<div class="invalid-feedback">Pelo menos um perfil é requerido.</div>
 							</div>
 							
@@ -70,7 +75,10 @@
 								  <label class="custom-control-label" for="ativo">Cadastro Ativo</label>
 								</div>
 							</div>
-
+							<!-- Para trabalharmos com update, trabalhamos com um input type hidden
+							 que tenha o ID do usuário que está sendo alterado. Desta forma,
+							 quando enviarmos o formulário la para p controller teremos o ID
+							 do objeto que estamos alterando-->
 							<input type="hidden" th:field="*{id}"> 
 							<div class="form-group row">
 								<div class="col-sm-10">
@@ -91,6 +99,24 @@
 
 	</section>
 	<script	th:src="~{}" th:fragment="js"></script>
-	<script th:inline="javascript" th:fragment="inlinescript"></script>
+	<script th:inline="javascript" th:fragment="inlinescript">
+		$("#perfis").ready(function()
+		{	//recuperando o objeto perfis que temos dentro
+			//do nosso objeto de usuário que está vindo para
+			//a página. A expressão a seguir é a forma que o
+			//thymeleaf consegue interpretar.
+			var perfis = [[${usuario.perfil}]];
+			
+			//looping na lista de perfis, sendo
+			//k o índice da lista e v o objeto da lista
+			$.each(perfis, function(k, v)
+			{	//pegando ID do ADMIN e atribuir ao value
+				//do option. Assim o JQUERY irá saber que
+				//estamos trabalhando com option de value = 1
+				$('#perfis option[value="'+v.id+'"]').attr(
+					'selected', 'selected');
+			});
+		});
+	</script>
 </body>
 </html>

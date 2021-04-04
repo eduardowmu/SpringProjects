@@ -7,7 +7,8 @@ $(document).ready(function() {
 		processing : true,
 		serverSide : true,
 		responsive : true,
-		ajax : {
+		ajax : {/*URL a ser configurado na controller da lista
+		 		de usuários para o datatable*/
 			url : '/u/datatables/server/usuarios',
 			data : 'data'
 		},
