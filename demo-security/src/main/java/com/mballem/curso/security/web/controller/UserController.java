@@ -17,15 +17,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.mballem.curso.security.domain.Medico;
 import com.mballem.curso.security.domain.Perfil;
 import com.mballem.curso.security.domain.PerfilTipo;
 import com.mballem.curso.security.domain.Usuario;
+import com.mballem.curso.security.service.MedicoService;
 import com.mballem.curso.security.service.UserService;
 
 @Controller
 @RequestMapping("u")
 public class UserController 
 {	@Autowired private UserService service;
+	@Autowired private MedicoService medService;
 
 	//abrir cadastro de usuarios (medico/admin/paciente)
 	@GetMapping("/novo/cadastro/usuario")
@@ -114,7 +117,14 @@ public class UserController
 		//restringindo acesso de um medico
 		else if(user.getPerfis().contains(
 				new Perfil(PerfilTipo.MEDICO.getCod())))
-		{return new ModelAndView("especialidade/especialidade");}
+		{	/*Declarando um objeto de medico e precisaremos acessar
+		 	a service de médico. Lembrando que se já tivermos um ID, 
+		 	desse médico, será feito um update, mas senão, teremos 
+		 	um create*/
+			Medico medico = this.medService.findUserById(id);
+			
+			return new ModelAndView("especialidade/especialidade");
+		}
 		
 		//condição para paciente, mas aqui não iremos enviar a
 		//requisição para a área de paciente. Iremos dizer para o
