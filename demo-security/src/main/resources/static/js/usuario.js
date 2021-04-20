@@ -74,7 +74,16 @@ $(document).ready(function() {
 				{	data : 'id',	
 					render : function(id) {
 						return ''.concat(
-							'<a class="btn btn-info btn-sm btn-block"', ' ') 
+							'<a class="btn btn-info btn-sm btn-block"', ' ')
+						/*Neste caso não temos o link dentro do botão pois neste precisaremos de
+						 *dois parâmetros, o ID e do parâmetro referente aos perfis e não conse-
+						 *guimos recuperar dentro de um mesmo elemento o valor de duas colunas
+						 *diferentes. Então iremos precisar criar uma função fora do código da tabela
+						 *para que possamos acessar as colunas e pegá-los para concatenar a nossa
+						 *URL. Para acessarmos os valores que temos na tabela, temos a variável table
+						 *ID = table-usuarios, que temos como referente a AJAX que trabalhamos
+						 *recebe o objeto DataTable, que é todo conteúdo que existe na tabela que
+						 *o JS está criando.*/
 						.concat('id="dp_').concat(id).concat('"', ' ') 
 						.concat(
 						'role="button" title="Editar" data-toggle="tooltip" data-placement="right">', ' ')
@@ -83,5 +92,19 @@ $(document).ready(function() {
 					orderable : false
 				}
 		]
+	});
+	/*Criação do código para com o click em algum dos botões da
+	 *coluna dados pessoais. Para que reconhecemos que houve o
+	 *click em um daqueles botões vamos trabalhar com JQUERY.
+	 *Nosso filtro é qualquer botão que tenha ID que inicie com
+	 *dp_*/
+	$('#table-usuarios tbody').on('click', '[id*="dp_"]',function()
+	{	/*data = nossa lista de colunas*/
+		var data = table.row($(this).parents('tr')).data();
+		var aux = new Array();
+		$.each(data.perfis, function(index, value)
+		{aux.push(value.id);});
+		document.location.href = '/u/editar/dados/usuario/' +
+			data.id + '/perfis/' + aux;
 	});
 });	

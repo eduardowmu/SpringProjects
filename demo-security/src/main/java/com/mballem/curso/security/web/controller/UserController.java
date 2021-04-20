@@ -100,10 +100,11 @@ public class UserController
 	@GetMapping("/editar/dados/usuario/{id}/perfis/{perfis}")
 	public ModelAndView preEditarCadastroPessoais(
 			@PathVariable("id") Long id,
-			@PathVariable("perfis") Long[] perfis)
-	{	Usuario user = this.service.findByIdAndPerfis(id, perfis);//new Usuario();
+			@PathVariable("perfis") Long[] perfisId)
+	{	Usuario user = this.service.findByIdAndPerfis(id, perfisId);//new Usuario();
 		//restringindo o acesso do ADMIN e ao mesmo tempo médico 
-		//ao perfil de usuário paciente
+		//ao perfil de usuário paciente. Aqui foi onde gerou a exceção
+		//de 500, quando que na verdade deveria ser 404
 		if(user.getPerfis().contains(
 				new Perfil(PerfilTipo.ADMIN.getCod()))
 				&& !user.getPerfis().contains(
@@ -121,7 +122,7 @@ public class UserController
 		//o metodo de acesso negado da HomeController
 		else if(user.getPerfis().contains(
 				new Perfil(PerfilTipo.PACIENTE.getCod())))
-		{	ModelAndView mv = new ModelAndView();
+		{	ModelAndView mv = new ModelAndView("error");
 			//para o tipo ModelAndView, usamos o objeto e não atributo
 			mv.addObject("status", 403);
 			mv.addObject("error", "Área Restrita!");

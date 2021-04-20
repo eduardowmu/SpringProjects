@@ -2,6 +2,7 @@ package com.mballem.curso.security.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -110,7 +111,17 @@ public class UserService implements UserDetailsService
 	public Usuario findById(Long id) 
 	{return this.userRepository.findById(id).get();}
 	
+	
 	@Transactional(readOnly = true)
-	public Usuario findByIdAndPerfis(Long id, Long[] perfis) 
-	{return this.userRepository.findByIdAndProfile(id, perfis);}
+	public Usuario findByIdAndPerfis(Long id, Long[] perfisId) 
+	{	return this.userRepository.findByIdAndProfile(id, perfisId)
+			/*Este método vai tratar o seguinte:
+			 *Se existir um usuário dentro do Optional, retona
+			 *um usuário, desde que a consulta tenha retornado
+			 *dados para o mesmo objeto usuário. Caso contrário,
+			 *irá lançar uma exception, que deve ser num formato
+			 *lambda*/
+			.orElseThrow(() -> new UsernameNotFoundException(
+					"Usuário não encontrado"));
+	}
 }
