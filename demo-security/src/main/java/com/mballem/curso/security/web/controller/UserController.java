@@ -122,8 +122,13 @@ public class UserController
 		 	desse médico, será feito um update, mas senão, teremos 
 		 	um create*/
 			Medico medico = this.medService.findUserById(id);
+			//método de classe AbstractEntity do spring. Caso o médico 
+			//ainda não exista, será criado um novo com o ID do usuário
+			return medico.hasNotId() ? 
+				new ModelAndView("medico/cadastro", "medico", new Medico(new Usuario(id))) : 
+				new ModelAndView("medico/cadastro", "medico", medico);
 			
-			return new ModelAndView("especialidade/especialidade");
+			//return new ModelAndView("especialidade/especialidade");
 		}
 		
 		//condição para paciente, mas aqui não iremos enviar a
