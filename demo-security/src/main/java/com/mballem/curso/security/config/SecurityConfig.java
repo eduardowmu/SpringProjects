@@ -40,7 +40,15 @@ public class SecurityConfig extends
 			.permitAll()
 			//adicionar acessos privados para o ADMIN
 			.antMatchers("/u/**").hasAuthority(ADMIN)
-			//acessos privados medicos
+			//acessos privados medicos.
+			/*Agora precisaremos dizer que iremos liberar esses acessos
+			 *para o médico e para o ADMIN.*/
+			.antMatchers("/medicos/dados", "/medicos/salvar", 
+					"/medicos/editar").hasAnyAuthority(MEDICO, ADMIN)
+			/*Quando add /medicos /dados para o ADMIN, estamos desbloqueando 
+			 *o acesso para que o ADMIN tenha então acesso a essa URI, como 
+			 *demos acesso a essa URI para o ADMIN, tudo que vier para baixo 
+			 *vai estar com a URI bloqueada, mesmo com este processo feito aqui.*/
 			.antMatchers("/medicos/**").hasAuthority(MEDICO)
 			//acesso privados especialidades
 			.antMatchers("/especialidades/**").hasAuthority(ADMIN)
