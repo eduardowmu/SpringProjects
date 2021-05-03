@@ -44,4 +44,10 @@ public class MedicoService
 				medico.getEspecialidades());
 		}
 	}
+
+	@Transactional(readOnly = true)
+	public Medico findByEmail(String email) 
+	{	return this.repository.findByEmail(email)
+			.orElse(new Medico());
+	}
 }
