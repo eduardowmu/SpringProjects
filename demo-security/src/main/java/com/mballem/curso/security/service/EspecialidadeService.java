@@ -1,7 +1,9 @@
 package com.mballem.curso.security.service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -59,4 +61,7 @@ public class EspecialidadeService
 	@Transactional(readOnly=true)
 	public List<String> buscarEspecialidadesPorTermo(String termo) 
 	{return this.repository.findEspecialidadesByTermo(termo);}
+	
+	public Set<Especialidade> buPorTitulos(String[] titulos) 
+	{return this.repository.findByTitulos(titulos);}
 }
