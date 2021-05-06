@@ -18,7 +18,6 @@ public class SecurityConfig extends
 	private static final String MEDICO = PerfilTipo.MEDICO.getDesc();
 	private static final String PACIENTE = PerfilTipo.PACIENTE.getDesc();
 
-	
 	//injeção de dependencias
 	@Autowired private UserService usuarioService;
 	
@@ -42,7 +41,8 @@ public class SecurityConfig extends
 			.antMatchers("/u/**").hasAuthority(ADMIN)
 			//acessos privados medicos.
 			/*Agora precisaremos dizer que iremos liberar esses acessos
-			 *para o médico e para o ADMIN.*/
+			 *para o médico e para o ADMIN. Com essa configuração, um ADMIN
+			 *só não será capaz de deletar um médico*/
 			.antMatchers("/medicos/dados", "/medicos/salvar", 
 					"/medicos/editar").hasAnyAuthority(MEDICO, ADMIN)
 			/*Quando add /medicos /dados para o ADMIN, estamos desbloqueando 
@@ -50,10 +50,12 @@ public class SecurityConfig extends
 			 *demos acesso a essa URI para o ADMIN, tudo que vier para baixo 
 			 *vai estar com a URI bloqueada, mesmo com este processo feito aqui.*/
 			.antMatchers("/medicos/**").hasAuthority(MEDICO)
-			//acesso privados especialidades
-			.antMatchers("/especialidades/**").hasAuthority(ADMIN)
 			//acesso privados pacientes
 			.antMatchers("/pacientes/**").hasAuthority(PACIENTE)
+			//acesso privados especialidades
+			.antMatchers("/datatables/server/medico/{id}").hasAnyAuthority(MEDICO, ADMIN)
+			.antMatchers("/especialidades/titulo").hasAnyAuthority(MEDICO, ADMIN)
+			.antMatchers("/especialidades/**").hasAuthority(ADMIN)
 			.anyRequest().authenticated()
 			//concatenação
 			.and()

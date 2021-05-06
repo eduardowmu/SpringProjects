@@ -23,4 +23,7 @@ public interface EspecialidadeRepository extends JpaRepository<Especialidade, Lo
 	/*Como iremos fazer consultas baseadas em arrays, usamos a clausura IN*/
 	@Query("select e from Especialidade e where e.titulo IN :titulos")
 	Set<Especialidade> findByTitulos(String[] titulos);
+	
+	@Query("select e from Especialidade e join e.medicos m where m.id =:id")
+	Page<Especialidade> findByIdMedico(Long id, Pageable pageable);
 }

@@ -62,6 +62,15 @@ public class EspecialidadeService
 	public List<String> buscarEspecialidadesPorTermo(String termo) 
 	{return this.repository.findEspecialidadesByTermo(termo);}
 	
+	@Transactional(readOnly=true)
 	public Set<Especialidade> buPorTitulos(String[] titulos) 
 	{return this.repository.findByTitulos(titulos);}
+
+	@Transactional(readOnly=true)
+	public Map<String, Object> buscarEspecialidadesPorMedico(Long id, HttpServletRequest request) 
+	{	this.dataTables.setRequest(request);
+		this.dataTables.setColunas(DatatablesColunas.ESPECIALIDADES);
+		Page<Especialidade> page = this.repository.findByIdMedico(id, this.dataTables.getPageable());
+		return this.dataTables.getResponse(page);
+	}
 }

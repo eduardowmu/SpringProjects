@@ -47,7 +47,16 @@ public class MedicoService
 
 	@Transactional(readOnly = true)
 	public Medico findByEmail(String email) 
-	{	return this.repository.findByEmail(email)
-			.orElse(new Medico());
+	{return this.repository.findByEmail(email).orElse(new Medico());}
+
+	@Transactional(readOnly = false)
+	public void excluirEspecialidadePorMedico(Long idMed, Long idEsp) 
+	{	Medico medico = this.repository.findById(idMed).get();
+		/*Através da expressão lambda iremos acessar cada especialidade
+		 *dentro da lista do médico, e remover aquele que conter o mesmo
+		 *ID passado como parâmetro do método. Nem precisamos do repository
+		 *para fazer essa deleção, o proprio hibernate vai entender esse
+		 *fluxo.*/
+		medico.getEspecialidades().removeIf(e -> e.getId().equals(idEsp));
 	}
 }

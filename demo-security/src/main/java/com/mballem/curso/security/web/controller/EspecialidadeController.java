@@ -38,8 +38,7 @@ public class EspecialidadeController
 	
 	/*Map que pegamos na requisição ajax especialidade.js*/
 	@GetMapping({"/datatables/server"})
-	public ResponseEntity<?> getEspecialidade(
-			HttpServletRequest request)
+	public ResponseEntity<?> getEspecialidade(HttpServletRequest request)
 	{	return ResponseEntity.ok(
 			this.service.buscarEspecialidades(request));
 	}
@@ -65,4 +64,9 @@ public class EspecialidadeController
 	{	List<String> especialidades = this.service.buscarEspecialidadesPorTermo(termo);
 		return ResponseEntity.ok(especialidades);
 	}
+	
+	@GetMapping({"/datatables/server/medico/{id}"})
+	public ResponseEntity<?> getEspecialidadePorMedico(@PathVariable("id") Long id,
+			HttpServletRequest request)
+	{return ResponseEntity.ok(this.service.buscarEspecialidadesPorMedico(id, request));}
 }
