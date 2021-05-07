@@ -29,8 +29,7 @@ public class UserService implements UserDetailsService
 
 	@Autowired private Datatables dataTables;
 	
-	//método que busca o usuario, que busca o retorno
-	//do repositório.
+	//método que busca o usuario, que busca o retorno do repositório.
 	//a notação faz parte do processo de transações do
 	//spring. Este valor true significa que esta sendo
 	//gerenciado pelo processo de transação do spring.
@@ -115,13 +114,21 @@ public class UserService implements UserDetailsService
 	@Transactional(readOnly = true)
 	public Usuario findByIdAndPerfis(Long id, Long[] perfisId) 
 	{	return this.userRepository.findByIdAndProfile(id, perfisId)
-			/*Este método vai tratar o seguinte:
-			 *Se existir um usuário dentro do Optional, retona
-			 *um usuário, desde que a consulta tenha retornado
-			 *dados para o mesmo objeto usuário. Caso contrário,
-			 *irá lançar uma exception, que deve ser num formato
-			 *lambda*/
-			.orElseThrow(() -> new UsernameNotFoundException(
-					"Usuário não encontrado"));
+			/*Este método vai tratar o seguinte: Se existir um usuário dentro 
+			 *do Optional, retona um usuário, desde que a consulta tenha retornado 
+			 *dados para o mesmo objeto usuário. Caso contrário, irá lançar uma 
+			 *exception, que deve ser num formato lambda*/
+			.orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+	}
+
+	public static boolean isSenhaCorreta(String senhaDigitada, String senhaAtual) 
+	{	/*Lembrando que a senha atual deve ser a que esta criptografada*/
+		return new BCryptPasswordEncoder().matches(senhaDigitada, senhaAtual);
+	}
+
+	@Transactional(readOnly = false)
+	public void editSenha(Usuario usuario, String senha) 
+	{	usuario.setSenha(new BCryptPasswordEncoder().encode(senha));
+		this.userRepository.save(usuario);
 	}
 }

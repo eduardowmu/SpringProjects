@@ -37,6 +37,8 @@ public class SecurityConfig extends
 			//significa que tal URI não irá precisar de
 			//autenticação
 			.permitAll()
+			//adicionar acessos privados para o MEDICO
+			.antMatchers("/u/editar/senha", "/u/confirmar/senha").hasAuthority(MEDICO)
 			//adicionar acessos privados para o ADMIN
 			.antMatchers("/u/**").hasAuthority(ADMIN)
 			//acessos privados medicos.

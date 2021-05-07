@@ -9,11 +9,14 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -147,5 +150,32 @@ public class UserController
 		}
 		
 		return new ModelAndView("redirect:/u/lista");
+	}
+	
+	/*Metodo utilizado para poder abrir a página da senmha no navegador*/
+	@GetMapping("/editar/senha")
+	public String abrirEditarSenha()	{return "usuario/editar-senha";}
+	
+	@PostMapping("/confirmar/senha")
+	public String editarSenha(@RequestParam("senha1") String s1, @RequestParam("senha2") String s2, 
+							  @RequestParam("senha3") String s3, @AuthenticationPrincipal User user,
+							  RedirectAttributes attr)
+	{	if(!s1.equals(s2))
+		{	attr.addFlashAttribute("Falha:", "Senhas não batem! Tente novamente");
+			return "redirect:/u/editar/senha";
+		}
+	
+		//org.springframework.security.core.userdetails.User
+		Usuario usuario = this.service.pullByEmail(user.getUsername());
+		
+		if(!UserService.isSenhaCorreta(s3, usuario.getSenha()))
+		{	attr.addFlashAttribute("falha", "Senha atual não confere, tente novamente");
+			return "redirect:/u/editar/senha";
+		}
+		
+		this.service.editSenha(usuario, s1);
+		/*Troca de senha com sucesso*/
+		attr.addFlashAttribute("sucesso", "Senha atualizada com sucesso");
+		return "redirect:/u/editar/senha";
 	}
 }
