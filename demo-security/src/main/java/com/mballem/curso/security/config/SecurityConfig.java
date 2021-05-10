@@ -38,7 +38,7 @@ public class SecurityConfig extends
 			//autenticação
 			.permitAll()
 			//adicionar acessos privados para o MEDICO
-			.antMatchers("/u/editar/senha", "/u/confirmar/senha").hasAuthority(MEDICO)
+			.antMatchers("/u/editar/senha", "/u/confirmar/senha").hasAnyAuthority(MEDICO, PACIENTE)
 			//adicionar acessos privados para o ADMIN
 			.antMatchers("/u/**").hasAuthority(ADMIN)
 			//acessos privados medicos.

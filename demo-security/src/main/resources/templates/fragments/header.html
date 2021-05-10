@@ -14,35 +14,52 @@
 			</button>
 			<div class="collapse navbar-collapse" id="navbarCollapse">
 				<ul class="navbar-nav mr-auto">
-					<li class="nav-item dropdown"><a
+					<li class="nav-item dropdown" sec:authorize="hasAuthority('ADMIN')"><a
 						class="btn btn-dark dropdown-toggle" href="#" id="dropdown01"
-						data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admistrador</a>
+						data-toggle="dropdown" aria-haspopup="true" 
+							aria-expanded="false">Admistrador</a>
 						<div class="dropdown-menu" aria-labelledby="dropdown01">
-							<a class="dropdown-item" th:href="@{/especialidades}">Especialidades</a> 
+							<a class="dropdown-item" 
+								th:href="@{/especialidades}">Especialidades</a> 
 							<div class="dropdown-divider"></div>
-							<a class="dropdown-item" th:href="@{/u/novo/cadastro/usuario}">Cadastro de Usuários</a>
-							<a class="dropdown-item" th:href="@{/u/lista}">Lista de Usuários</a>
+							<a class="dropdown-item" 
+								th:href="@{/u/novo/cadastro/usuario}">
+								Cadastro de Usuários
+							</a>
+							<a class="dropdown-item" 
+								th:href="@{/u/lista}">Lista de Usuários</a>
 						</div>
 					</li>
-					<li class="nav-item dropdown"><a
-						class="btn btn-dark dropdown-toggle" href="#" id="dropdown02"
-						data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Médicos</a>
+					<li class="nav-item dropdown" sec:authorize="hasAuthority('MEDICO')"><a
+						class="btn btn-dark dropdown-toggle" href="#" 
+							id="dropdown02" data-toggle="dropdown" aria-haspopup="true" 
+								aria-expanded="false">Médicos</a>
 						<div class="dropdown-menu" aria-labelledby="dropdown02">
-							<a class="dropdown-item" th:href="@{/medicos/dados}">Dados Cadastrais</a>
-							<a class="dropdown-item" th:href="@{/u/editar/senha}">Editar Senha</a>
+							<a class="dropdown-item" th:href="@{/medicos/dados}">
+								Dados Cadastrais</a>
+							<a class="dropdown-item" th:href="@{/u/editar/senha}">
+								Editar Senha</a>
 							<div class="dropdown-divider"></div>
-							<a class="dropdown-item" th:href="@{/agendamentos/historico/consultas}">Consultas Agendadas</a>
+							<a class="dropdown-item" 
+								th:href="@{/agendamentos/historico/consultas}">
+								Consultas Agendadas</a>
 						</div>
 					</li>
-					<li class="nav-item dropdown"><a
+					<li class="nav-item dropdown" sec:authorize="hasAuthority('PACIENTE')"><a
 						class="btn btn-dark dropdown-toggle" href="#" id="dropdown03"
-						data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Pacientes</a>
+						data-toggle="dropdown" aria-haspopup="true" 
+							aria-expanded="false">Pacientes</a>
 						<div class="dropdown-menu" aria-labelledby="dropdown03">
-							<a class="dropdown-item" th:href="@{/pacientes}">Cadastrar Dados</a>
-							<a class="dropdown-item" th:href="@{/u/editar/senha}">Editar Senha</a>
+							<a class="dropdown-item" th:href="@{/pacientes/dados}">
+								Cadastrar Dados</a>
+							<a class="dropdown-item" th:href="@{/u/editar/senha}">
+								Editar Senha</a>
 							<div class="dropdown-divider"></div>
-							<a class="dropdown-item" th:href="@{/agendamentos/agendar}">Agendar Consulta</a>
-							<a class="dropdown-item" th:href="@{/agendamentos/historico/paciente}">Histórico de Consultas</a>
+							<a class="dropdown-item" 
+								th:href="@{/agendamentos/agendar}">Agendar Consulta</a>
+							<a class="dropdown-item" 
+								th:href="@{/agendamentos/historico/paciente}">
+								Histórico de Consultas</a>
 						</div>
 					</li>					
 				</ul>
