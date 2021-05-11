@@ -1,5 +1,6 @@
 package com.mballem.curso.security.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,4 +60,8 @@ public class MedicoService
 		 *fluxo.*/
 		medico.getEspecialidades().removeIf(e -> e.getId().equals(idEsp));
 	}
+
+	@Transactional(readOnly = true)
+	public List<Medico> buscarMedicoPorEspecialidade(String titulo) 
+	{return this.repository.findByMedicosPorEspecialidade(titulo);}
 }

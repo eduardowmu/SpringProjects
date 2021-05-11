@@ -3,6 +3,7 @@ package com.mballem.curso.security.web.controller;
 import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
@@ -84,4 +85,9 @@ public class MedicoController
 		attr.addFlashAttribute("sucesso", "Especialidade excluída com sucesso.");
 		return "redirect:/medicos/dados";
 	}
+	
+	/*Buscar medicos por especialidades via ajax*/
+	@GetMapping("/especialidade/titulo/{titulo}")
+	public ResponseEntity<?> getMedicoPorEspecialidade(@PathVariable("titulo") String titulo)
+	{return ResponseEntity.ok(this.service.buscarMedicoPorEspecialidade(titulo));}
 }

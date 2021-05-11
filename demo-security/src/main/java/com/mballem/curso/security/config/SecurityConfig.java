@@ -41,6 +41,8 @@ public class SecurityConfig extends
 			.antMatchers("/u/editar/senha", "/u/confirmar/senha").hasAnyAuthority(MEDICO, PACIENTE)
 			//adicionar acessos privados para o ADMIN
 			.antMatchers("/u/**").hasAuthority(ADMIN)
+			/*Liberando para o paciente a lista de médicos*/
+			.antMatchers("/medicos/especialidade/titulo/*").hasAuthority(PACIENTE)
 			//acessos privados medicos.
 			/*Agora precisaremos dizer que iremos liberar esses acessos
 			 *para o médico e para o ADMIN. Com essa configuração, um ADMIN
@@ -56,7 +58,7 @@ public class SecurityConfig extends
 			.antMatchers("/pacientes/**").hasAuthority(PACIENTE)
 			//acesso privados especialidades
 			.antMatchers("/datatables/server/medico/{id}").hasAnyAuthority(MEDICO, ADMIN)
-			.antMatchers("/especialidades/titulo").hasAnyAuthority(MEDICO, ADMIN)
+			.antMatchers("/especialidades/titulo").hasAnyAuthority(MEDICO, ADMIN, PACIENTE)
 			.antMatchers("/especialidades/**").hasAuthority(ADMIN)
 			.anyRequest().authenticated()
 			//concatenação
@@ -102,8 +104,7 @@ public class SecurityConfig extends
 			 *criptografada. Quando o spring receber os dados da
 			 *consulta que foi passado para ele e for comparar com
 			 *a senha digitada, será necessário criptografar a senha
-			 *para ver se essa criptografia é igual aquela que
-			 *temos no BD*/
+			 *para ver se essa criptografia é igual aquela que temos no BD*/
 			.passwordEncoder(new BCryptPasswordEncoder());
 	}	
 }
