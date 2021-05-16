@@ -42,7 +42,7 @@ public class SecurityConfig extends
 			//adicionar acessos privados para o ADMIN
 			.antMatchers("/u/**").hasAuthority(ADMIN)
 			/*Liberando para o paciente a lista de médicos*/
-			.antMatchers("/medicos/especialidade/titulo/*").hasAuthority(PACIENTE)
+			.antMatchers("/medicos/especialidade/titulo/*").hasAnyAuthority(MEDICO, PACIENTE)
 			//acessos privados medicos.
 			/*Agora precisaremos dizer que iremos liberar esses acessos
 			 *para o médico e para o ADMIN. Com essa configuração, um ADMIN

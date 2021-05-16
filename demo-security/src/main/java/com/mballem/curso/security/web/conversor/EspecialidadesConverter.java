@@ -27,7 +27,7 @@ public class EspecialidadesConverter implements Converter<String[], Set<Especial
 		 *temos certeza que esse array, se chegar aqui não irá causar problema de 
 		 *nullpointer*/
 		if(titulos != null && titulos.length > 0)
-		{especialidades.addAll(this.service.buPorTitulos(titulos));}
+		{especialidades.addAll(this.service.buscarPorTitulos(titulos));}
 		return especialidades;
 	}
 }

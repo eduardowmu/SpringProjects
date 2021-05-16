@@ -57,3 +57,70 @@ $('#especialidade').on('blur', function() {
 		});
 	}
 });	
+
+/** 
+ * busca os horários livres para consulta conforme a data e o médico.
+ * os horários são adicionados a página como um select:option.	
+*/
+$('#data').on('blur', function () {
+	$("#horarios").empty();
+    var data = $(this).val();
+    var medico = $('input[name="medico.id"]:checked').val();
+    /*Isso verifica se a data foi selecionada. O método parse
+     *do objeto Date do JS retorna um true ou false para se
+     *a existe uma data selecionada ou não.*/
+    if (!Date.parse(data)) {
+        console.log('data nao selecionada')
+    } else {
+    	$.get('/agendamentos/horario/medico/'+ medico + '/data/' + data , function( result ) {
+    		$.each(result, function (k, v) {
+    			$("#horarios").append( 
+    				'<option class="op" value="'+ v.id +'">'+ v.horaMinuto + '</option>'
+    			);	            			
+    	    });
+    	});
+    }
+});
+
+/**
+ * Datatable histórico de consultas
+*/
+$(document).ready(function() {
+    moment.locale('pt-BR');
+    var table = $('#table-paciente-historico').DataTable({
+        searching : false,
+        lengthMenu : [ 5, 10 ],
+        processing : true,
+        serverSide : true,
+        responsive : true,
+        order: [2, 'desc'],
+        ajax : {
+            url : '/agendamentos/datatables/server/historico',
+            data : 'data'
+        },
+        columns : [
+            {data : 'id'},
+            {data : 'paciente.nome'},
+            {data: 'dataConsulta', render:
+                function( dataConsulta ) {
+                    return moment(dataConsulta).format('LLL');
+                }
+            },
+            {data : 'medico.nome'},
+            {data : 'especialidade.titulo'},
+            {orderable : false,	data : 'id', "render" : function(id) {
+                    return '<a class="btn btn-success btn-sm btn-block" '
+			    +'href="/agendamentos/editar/consulta/'
+                            + id + '" role="button"><i class="fas fa-edit"></i></a>';
+                }
+            },
+            {orderable : false,	data : 'id', "render" : function(id) {
+                    return '<a class="btn btn-danger btn-sm btn-block" '
+		    +'href="/agendamentos/excluir/consulta/' + id 
+		    +'" role="button" data-toggle="modal" data-target="#confirm-modal">'
+		    +'<i class="fas fa-times-circle"></i></a>';
+                }
+            }
+        ]
+    });
+});

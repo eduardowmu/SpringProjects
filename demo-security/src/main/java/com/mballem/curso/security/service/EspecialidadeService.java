@@ -63,7 +63,7 @@ public class EspecialidadeService
 	{return this.repository.findEspecialidadesByTermo(termo);}
 	
 	@Transactional(readOnly=true)
-	public Set<Especialidade> buPorTitulos(String[] titulos) 
+	public Set<Especialidade> buscarPorTitulos(String[] titulos) 
 	{return this.repository.findByTitulos(titulos);}
 
 	@Transactional(readOnly=true)
