@@ -25,8 +25,7 @@ public class AgendamentoService
 	@Autowired Datatables datatables;
 
 	@Transactional(readOnly=true)
-	public List<Horario> buscarHorariosDisponiveisPorMedico(
-			Long id, LocalDate date) 
+	public List<Horario> buscarHorariosDisponiveisPorMedico(Long id, LocalDate date) 
 	{return this.agendamentoRepository.buscarAgendamentoMedico(id, date);}
 
 	@Transactional(readOnly=false)
@@ -77,4 +76,7 @@ public class AgendamentoService
 	{	return this.agendamentoRepository.findByIdAndUserName(id, email)
 			.orElseThrow(() -> new AccessDeniedException("Acesso negado! " + email));
 	}
+
+	@Transactional(readOnly=false)
+	public void delete(Long id) {this.agendamentoRepository.deleteById(id);}
 }

@@ -11,7 +11,8 @@
 		<main role="main">
 
 		<section class="jumbotron text-center">
-			<img class="d-block mx-auto" th:src="@{/image/spring-security.png}"
+			<img class="d-block mx-auto" 
+				th:src="@{/image/spring-security.png}"
 				width="72" height="72">
 			<div class="container">
 				<h1 class="jumbotron-heading">Clínica Spring Security</h1>
@@ -24,7 +25,9 @@
 
 				<div class="d-flex justify-content-center">
 					<div class="col-md-10">
-
+						<div th:replace=
+							"fragments/alert :: alerta-sucesso">
+						</div>
 						<h2>Consultas Agendadas</h2>
 
 						<table id="table-paciente-historico"
