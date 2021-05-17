@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -33,11 +34,16 @@ public class AgendamentoController
 {	@Autowired private AgendamentoService agendamentoService;
 	@Autowired private PacienteService pacienteService;
 	@Autowired private EspecialidadeService especialidadeService;
-	
+	 
+	/*Ambos os métodos podem ser acessados somente pelo
+	 *médico e pelo paciente*/
+	@PreAuthorize("hasAnyAuthority('PACIENTE', 'MEDICO')")
 	@GetMapping({"/agendar"})
 	public String agendarConsulta(Agendamento agendamento)
 	{return "agendamento/cadastro";}
 	
+	
+	@PreAuthorize("hasAnyAuthority('PACIENTE', 'MEDICO')")
 	@GetMapping({"/horario/medico/{id}/data/{data}"})
 	public ResponseEntity<?> buscarHorarios(@PathVariable("id") Long id, 
 			@PathVariable("data") @DateTimeFormat(iso = ISO.DATE) LocalDate date)
@@ -49,7 +55,9 @@ public class AgendamentoController
 	/*o objeto agendamento é quem vai trazer as informações da página
 	 *O REdirectAttributes é para envirarmos uma mensagem de resposta
 	 *para o lado cliente e o Authentication é para que saibamos qual
-	 *usuário está fazendo a requisição.*/
+	 *usuário está fazendo a requisição. Este método só pode ser feito
+	 *por um paciente.*/
+	@PreAuthorize("hasAuthority('PACIENTE')")
 	@PostMapping({"/salvar"})
 	public String agendar(Agendamento agendamento, 
 		RedirectAttributes attr, @AuthenticationPrincipal User user)
@@ -79,10 +87,12 @@ public class AgendamentoController
 	}
 	
 	/*Abrir historico de agendamentos. O segundo é o link para o perfil de médicos*/
+	@PreAuthorize("hasAnyAuthority('PACIENTE', 'MEDICO')")
 	@GetMapping({"/historico/paciente", "/historico/consultas"})
 	public String historico() {return "agendamento/historico-paciente";}
 	
 	/*URI que temos no datatable*/
+	@PreAuthorize("hasAnyAuthority('PACIENTE', 'MEDICO')")
 	@GetMapping("/datatables/server/historico")
 	public ResponseEntity<?> historicoAgendamentosPorPaciente(HttpServletRequest request, 
 			@AuthenticationPrincipal User user)
@@ -105,6 +115,7 @@ public class AgendamentoController
 		return ResponseEntity.notFound().build();
 	}
 	
+	@PreAuthorize("hasAnyAuthority('PACIENTE', 'MEDICO')")
 	@GetMapping({"/editar/consulta/{id}"})
 	public String preEditarConsultaPaciente(@PathVariable("id") Long id, ModelMap model,
 			@AuthenticationPrincipal User user)
@@ -119,6 +130,7 @@ public class AgendamentoController
 		return "agendamento/cadastro";
 	}
 	
+	@PreAuthorize("hasAnyAuthority('PACIENTE', 'MEDICO')")
 	@PostMapping("/editar")
 	public String editarConsulta(Agendamento agendamento, RedirectAttributes attr,
 			@AuthenticationPrincipal User user)
@@ -133,6 +145,7 @@ public class AgendamentoController
 	}
 	
 	//esse path é tirado de agendamento.js
+	@PreAuthorize("hasAuthority('PACIENTE')")
 	@GetMapping("/excluir/consulta/{id}")
 	public String excluirAgendamento(@PathVariable("id") Long id, RedirectAttributes attr)
 	{	this.agendamentoService.delete(id);
