@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -177,5 +178,29 @@ public class UserController
 		/*Troca de senha com sucesso*/
 		attr.addFlashAttribute("sucesso", "Senha atualizada com sucesso");
 		return "redirect:/u/editar/senha";
+	}
+	
+	@GetMapping("/novo/cadastro")
+	public String novoCadastro(Usuario usuario)	{return "cadastrar-se";}
+	
+	@GetMapping("/cadastro/realizado")
+	public String cadastroRealizado(Usuario usuario)	{return "fragments/mensagem";}
+	
+	//recebe o form da página cadastrar-se
+	@PostMapping("/cadastro/paciente/salvar")
+	public String cadastrarPaciente(Usuario usuario, 
+		/*Esta classe serve para trabalharmos com a validação backend e é isso que teremos
+		 *de erro quando o usuário tentar se cadastrar no sistema com um nome de usuário
+		 *já cadastrado. Primeiro vamos criar um método que irá cadastrar este usuário.
+		 *O método estará presente em UsuarioService*/	
+		BindingResult result)
+	{	try {this.service.salvarCadastroPaciente(usuario);}
+		/*Essa exceção será disparada quando tentarmos inserir um usuário que já exista no
+		 *banco de dados*/
+		catch(DataIntegrityViolationException e) 
+		{	result.reject("email", "Usuário já cadastrado!");
+			return "cadastrar-se";
+		}
+		return "redirect:/u/cadastro/realizado";
 	}
 }

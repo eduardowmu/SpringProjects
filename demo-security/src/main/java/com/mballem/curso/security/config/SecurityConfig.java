@@ -40,6 +40,9 @@ public class SecurityConfig extends
 			//significa que tal URI não irá precisar de
 			//autenticação
 			.permitAll()
+			/*adicionando novas URIs que serão publicas do cadastro de pacientes*/
+			.antMatchers("/u/novo/cadastro", "/u/cadastro/realizado", 
+					"/u/cadastro/paciente/salvar").permitAll()
 			//adicionar acessos privados para o MEDICO
 			.antMatchers("/u/editar/senha", "/u/confirmar/senha").hasAnyAuthority(MEDICO, PACIENTE)
 			//adicionar acessos privados para o ADMIN
@@ -96,8 +99,8 @@ public class SecurityConfig extends
 	/*Método que será sobreescrito de WebSecurityConfigureAdapter*/
 	@Override protected void configure(
 			AuthenticationManagerBuilder auth) throws Exception 
-	{	/*Este método espera que passemos como parâmetro um objeto do tipo userDetailsService, que é nosso service,
-		pois esta implementa um UserDetailService.*/
+	{	/*Este método espera que passemos como parâmetro um objeto do tipo userDetailsService, que é nosso 
+		service, pois esta implementa um UserDetailService.*/
 		auth.userDetailsService(this.usuarioService)
 		/*O objetivo desse método é informar qual o tipo de criptografia que será utilizado. Quando formos fazer
 		 *Um cadastro de usuário iremos pegar a senha digitado no cadastro e vai criptografar e salvar a senha

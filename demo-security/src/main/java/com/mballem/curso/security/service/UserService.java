@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.mballem.curso.security.datatables.Datatables;
 import com.mballem.curso.security.datatables.DatatablesColunas;
 import com.mballem.curso.security.domain.Perfil;
+import com.mballem.curso.security.domain.PerfilTipo;
 import com.mballem.curso.security.domain.Usuario;
 import com.mballem.curso.security.repository.UserRepository;
 
@@ -129,6 +130,15 @@ public class UserService implements UserDetailsService
 	@Transactional(readOnly = false)
 	public void editSenha(Usuario usuario, String senha) 
 	{	usuario.setSenha(new BCryptPasswordEncoder().encode(senha));
+		this.userRepository.save(usuario);
+	}
+
+	@Transactional(readOnly = false)
+	public void salvarCadastroPaciente(Usuario usuario) 
+	{	//Criptografia de senha
+		String cripty = new BCryptPasswordEncoder().encode(usuario.getSenha());
+		usuario.setSenha(cripty);
+		usuario.addPerfil(PerfilTipo.PACIENTE);
 		this.userRepository.save(usuario);
 	}
 }
