@@ -41,8 +41,7 @@ public class UserService implements UserDetailsService
 	//como o sistema transacional do spring ja encerrou
 	//com o método buscar por e-mail, não temos mais acesso
 	//a aquela sessão que foi criado com banco de dados
-	//então, não consegue voltar com o banco de dados e trazer
-	//a lista de perfis.
+	//então, não consegue voltar com o banco de dados e trazer a lista de perfis.
 	@Transactional(readOnly = true)
 	public Usuario pullByEmail(String email)
 	{return this.userRepository.findByEmail(email);}
@@ -55,14 +54,16 @@ public class UserService implements UserDetailsService
 		//na sessão e a partir deste objeto, o spring secuirty consegue
 		//comparar se o perfil do objeto que está na sessão é igual ao
 		//perfil que estamos dando a autorização em cada uma das URLs.
-		Usuario usuario = this.pullByEmail(username);
+		Usuario usuario = //this.pullByEmail(username);
+				this.buscarPorEmailEAtivo(username)
+			.orElseThrow(() -> new UsernameNotFoundException(
+				"Usuario "+username+" não encontrado"));
 		
 		/*User é uma classe do Spring que implementa 
 		 *UserDetails. É com isso que iremos conseguir
 		 *passar alguns dos dados que recuperamos a partir
 		 *da consulta*/
-		return new User(usuario.getEmail(), 
-				usuario.getSenha(),
+		return new User(usuario.getEmail(), usuario.getSenha(),
 				//classe do Spring que possui alguns métodos
 				//uma delas é a criação de uma lista de regras,
 				//onde iremos configurar os perfis de cada usuário
@@ -141,4 +142,8 @@ public class UserService implements UserDetailsService
 		usuario.addPerfil(PerfilTipo.PACIENTE);
 		this.userRepository.save(usuario);
 	}
+	
+	@Transactional(readOnly = true)
+	public Optional<Usuario> buscarPorEmailEAtivo(String email)
+	{return this.userRepository.findByEmailAndAtivo(email);}
 }

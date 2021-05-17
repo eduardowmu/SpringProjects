@@ -77,7 +77,9 @@ public class SecurityConfig extends
 				//de login. NO caso, direcionando para qq outra
 				//página da nossa aplicação.
 				.defaultSuccessUrl("/", true)
-				//mas se falhar a autenticação
+				/*mas se falhar a autenticação. Este método que o spring
+				 *executa quando o usuário não for confirmado na tentativa
+				 *de autenticação, mesmo tendo colocado essa instrução.*/
 				.failureUrl("/login-error")
 				//obriga que todos os usuarios tenha permissão para
 				//acessar a página de login e a de erro
