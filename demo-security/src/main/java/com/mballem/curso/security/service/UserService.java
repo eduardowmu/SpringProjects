@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +17,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Base64Utils;
 
 import com.mballem.curso.security.datatables.Datatables;
 import com.mballem.curso.security.datatables.DatatablesColunas;
 import com.mballem.curso.security.domain.Perfil;
 import com.mballem.curso.security.domain.PerfilTipo;
 import com.mballem.curso.security.domain.Usuario;
+import com.mballem.curso.security.exception.AccessDeniedException;
 import com.mballem.curso.security.repository.UserRepository;
 
 @Service
@@ -29,6 +32,9 @@ public class UserService implements UserDetailsService
 {	@Autowired private UserRepository userRepository;
 
 	@Autowired private Datatables dataTables;
+	
+	/*Dependência para serviço de e-mail para confirmação de cadastro.*/
+	@Autowired private EmailService emailService;
 	
 	//método que busca o usuario, que busca o retorno do repositório.
 	//a notação faz parte do processo de transações do
@@ -135,15 +141,51 @@ public class UserService implements UserDetailsService
 	}
 
 	@Transactional(readOnly = false)
-	public void salvarCadastroPaciente(Usuario usuario) 
+	public void salvarCadastroPaciente(Usuario usuario) throws MessagingException 
 	{	//Criptografia de senha
 		String cripty = new BCryptPasswordEncoder().encode(usuario.getSenha());
 		usuario.setSenha(cripty);
 		usuario.addPerfil(PerfilTipo.PACIENTE);
 		this.userRepository.save(usuario);
+		/*chamando o metodo de serviço de envio de e-mail*/
+		this.enviarEmailCadastro(usuario.getEmail());
 	}
 	
 	@Transactional(readOnly = true)
 	public Optional<Usuario> buscarPorEmailEAtivo(String email)
 	{return this.userRepository.findByEmailAndAtivo(email);}
+	
+	/*Método de envio de serviço de e-mail após salvar o cadastro do usuário.
+	 *Além do envio de e-mail, este carregará um código, para que consiga fazer
+	 *a confirmação do cadastro, enviando como um parametro da URL, pois quando
+	 *chegar o e-mail para o paciente, e clicar no link, este deve conter o e-mail
+	 *para que a aplicação receba essa requisição e possamos ativar o cadastro
+	 *a partir deste e-mail. Esse código é do tipo base64*/
+	public void enviarEmailCadastro(String email) throws MessagingException
+	{	/*criação do código de confirmação, cujo método recebe como parametros
+		um array de bytes*/
+		String codigo = Base64Utils.encodeToString(email.getBytes());
+		this.emailService.enviarPedidoConfirmacaoCadastro(email, codigo);
+	}
+	
+	/*Método de ativação do cadastro, esse codigo precisa novamente ser convertido
+	 *no e-mail do usuário*/
+	@Transactional(readOnly = false)
+	public void ativarCadastroPaciente(String codigo)
+	{	String email = new String(Base64Utils.decodeFromString(codigo));
+		
+		/*Criando um objeto do tipo usuario, que será o dono deste e-mail*/
+		Usuario usuario = this.pullByEmail(email);
+		
+		/*Condição para caso o usuário não for encontrado, será lançado uma exceção*/
+		if(usuario.hasNotId())
+		{	throw new AccessDeniedException("Não foi possível ativar seu cadastro. "
+				+ "Entre em contato com suporte");
+		}
+		
+		/*Caso o usuário exista, ajusta seu cadastro como ativo. Isso o hibernate já
+		 *faz de forma automática se fazermos apenas um setAtivo(true) do método da
+		 *classe*/
+		usuario.setAtivo(true);
+	}
 }

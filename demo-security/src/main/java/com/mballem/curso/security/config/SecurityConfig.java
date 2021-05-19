@@ -43,6 +43,7 @@ public class SecurityConfig extends
 			/*adicionando novas URIs que serão publicas do cadastro de pacientes*/
 			.antMatchers("/u/novo/cadastro", "/u/cadastro/realizado", 
 					"/u/cadastro/paciente/salvar").permitAll()
+			.antMatchers("/u/confirmacao/cadastro").permitAll()
 			//adicionar acessos privados para o MEDICO
 			.antMatchers("/u/editar/senha", "/u/confirmar/senha").hasAnyAuthority(MEDICO, PACIENTE)
 			//adicionar acessos privados para o ADMIN

@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +45,7 @@ public class UserController
 	public String listarUsuarios()
 	{return "usuario/lista";}
 	
-	/*listar usuarios na datatables (usuario.js - ajax 
-	 *table-usuarios)*/
+	/*listar usuarios na datatables (usuario.js - ajax table-usuarios)*/
 	@GetMapping("/datatables/server/usuarios")
 	public ResponseEntity<Map<String, Object>> listarUsuariosDataTable(HttpServletRequest request)
 	{return ResponseEntity.ok(this.service.bucarUsuarios(request));}
@@ -60,19 +60,15 @@ public class UserController
 	 *por este sistema de cadastro. O unico usuário que irá criar seu próprio
 	 *cadastro será o paciente, pois assim poderá fazer seu cadastro pelo
 	 *próprio site, antes de estar logado no site. Mas um médico, por ser um 
-	 *funcionário da clínica, quem irá cadastrar nesse médico no sistema
-	 *será um ADMIN.*/
+	 *funcionário da clínica, quem irá cadastrar nesse médico no sistema será um ADMIN.*/
 	@PostMapping("/cadastro/salvar")
 	public String saveUser(Usuario usuario, RedirectAttributes attr)
 	{	List<Perfil> perfis = usuario.getPerfis();
-		/*Condição que verifica se as regras de cadastro estão sendo
-		 *obedecidas, de acordo com os perfis.*/
-		if(perfis.size() > 2 ||//1L representa o ID de perfil do tipo ADMIN
-							   //e 3L é o perfil de paciente.
+		/*Condição que verifica se as regras de cadastro estão sendo obedecidas, de acordo com os perfis.*/
+		if(perfis.size() > 2 || //1L representa o ID de perfil do tipo ADMIN e 3L é o perfil de paciente.
 			perfis.containsAll(Arrays.asList(new Perfil(1L), new Perfil(3L))) ||
 			perfis.containsAll(Arrays.asList(new Perfil(2L), new Perfil(3L))))
-		{	//o primeiro parametro serve para que acessemos nosso fragmento
-			//de alerta
+		{	//o primeiro parametro serve para que acessemos nosso fragmento de alerta
 			attr.addFlashAttribute("falha:", "Cadastro não permitido de acordo"
 					+ " com as normas internas.");
 			attr.addFlashAttribute("usuario", usuario);
@@ -97,16 +93,13 @@ public class UserController
 	{	return new ModelAndView("usuario/cadastro", 
 			//enviando os dados para a página de cadastro
 			"usuario",
-			//enviando os dados do usuário, a partir de um
-			//objeto usuário, que pegamos a partir de uma
-			//consulta que precisa ser realizada pelo ID
-			//do usuário que estamos recebendo pela URL
+			//enviando os dados do usuário, a partir de um objeto usuário, que pegamos a partir de uma
+			//consulta que precisa ser realizada pelo ID do usuário que estamos recebendo pela URL
 			service.findById(id));
 	}
 	//pre edição de dados pessoais de acordo com perfil
 	@GetMapping("/editar/dados/usuario/{id}/perfis/{perfis}")
-	public ModelAndView preEditarCadastroPessoais(
-			@PathVariable("id") Long id,
+	public ModelAndView preEditarCadastroPessoais(@PathVariable("id") Long id,
 			@PathVariable("perfis") Long[] perfisId)
 	{	Usuario user = this.service.findByIdAndPerfis(id, perfisId);//new Usuario();
 		//restringindo o acesso do ADMIN e ao mesmo tempo médico 
@@ -123,8 +116,7 @@ public class UserController
 				new Perfil(PerfilTipo.MEDICO.getCod())))
 		{	/*Declarando um objeto de medico e precisaremos acessar
 		 	a service de médico. Lembrando que se já tivermos um ID, 
-		 	desse médico, será feito um update, mas senão, teremos 
-		 	um create*/
+		 	desse médico, será feito um update, mas senão, teremos um create*/
 			Medico medico = this.medService.findUserById(id);
 			//método de classe AbstractEntity do spring. Caso o médico 
 			//ainda não exista, será criado um novo com o ID do usuário
@@ -145,8 +137,7 @@ public class UserController
 			//para o tipo ModelAndView, usamos o objeto e não atributo
 			mv.addObject("status", 403);
 			mv.addObject("error", "Área Restrita!");
-			mv.addObject("message", "Você não tem permissão "
-						+ "para acesso a esta área ou ação");
+			mv.addObject("message", "Você não tem permissão para acesso a esta área ou ação");
 			return mv;
 		}
 		
@@ -159,8 +150,7 @@ public class UserController
 	
 	@PostMapping("/confirmar/senha")
 	public String editarSenha(@RequestParam("senha1") String s1, @RequestParam("senha2") String s2, 
-							  @RequestParam("senha3") String s3, @AuthenticationPrincipal User user,
-							  RedirectAttributes attr)
+		@RequestParam("senha3") String s3, @AuthenticationPrincipal User user, RedirectAttributes attr)
 	{	if(!s1.equals(s2))
 		{	attr.addFlashAttribute("Falha:", "Senhas não batem! Tente novamente");
 			return "redirect:/u/editar/senha";
@@ -193,14 +183,27 @@ public class UserController
 		 *de erro quando o usuário tentar se cadastrar no sistema com um nome de usuário
 		 *já cadastrado. Primeiro vamos criar um método que irá cadastrar este usuário.
 		 *O método estará presente em UsuarioService*/	
-		BindingResult result)
+		BindingResult result) throws MessagingException
 	{	try {this.service.salvarCadastroPaciente(usuario);}
-		/*Essa exceção será disparada quando tentarmos inserir um usuário que já exista no
-		 *banco de dados*/
+		/*Essa exceção será disparada quando tentarmos inserir um usuário que já exista no banco de dados*/
 		catch(DataIntegrityViolationException e) 
 		{	result.reject("email", "Usuário já cadastrado!");
 			return "cadastrar-se";
 		}
 		return "redirect:/u/cadastro/realizado";
+	}
+	
+	/*Recebe a requisição de confirmação de cadastro do paciente. Este método tem como retorno um objeto 
+	 *string pois os retorno será um redirect para a página de login. No GetMapping precisamos add a URI 
+	 *que vai acessar esse método, definido no serviço de e-mail, no metodo de envio de confirmação*/
+	@GetMapping("/confirmacao/cadastro")
+	public String respostaConfirmacaoCadastroPaciente(@RequestParam("codigo") String codigo, 										
+			RedirectAttributes attr)
+	{	this.service.ativarCadastroPaciente(codigo);
+		attr.addFlashAttribute("alerta", "Sucesso.");
+		attr.addFlashAttribute("titulo", "Cadastro ativado.");
+		attr.addFlashAttribute("texto", "Parabéns, seu cadastro foi ativado!");
+		attr.addFlashAttribute("subtexto", "Já pode realizar seu login");
+		return "redirect:/login";
 	}
 }
