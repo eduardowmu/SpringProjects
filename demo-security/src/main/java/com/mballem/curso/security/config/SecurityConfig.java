@@ -29,10 +29,8 @@ public class SecurityConfig extends
 	{	/*Essa Ã© a configuraÃ§Ã£o mais bÃ¡sica que temos para
 	 	trabalhar com Spring Security*/
 		http.authorizeRequests()
-			//liberando webjars (estaticos). os duplos
-			//asteristicos, estamos liberando tudo que estiver
-			//dentro do diretÃ³rio, no caso de um exemplo abaixo, 
-			//webjars.
+			//liberando webjars (estaticos). os duplos asteristicos, estamos liberando tudo 
+			//que estiver dentro do diretÃ³rio, no caso de um exemplo abaixo, webjars.
 			.antMatchers("/webjars/**", "/css/**", "/image/**", 
 				"/js/**").permitAll()
 			//liberando a pagina HOME
@@ -98,13 +96,14 @@ public class SecurityConfig extends
 			 *denied exception. EntÃ£o automaticamente o Spring vai capturar
 			 *esse tipo de exceÃ§Ã£o e vai enviar um redirecionamento lÃ¡ para
 			 *o mÃ©todo que vamos criar na controller.*/
-			.exceptionHandling().accessDeniedPage("/acesso-negado");
+			.exceptionHandling().accessDeniedPage("/acesso-negado")
+			/*Configuração do remember-me, com validade de aproximadamente de 2 semanas.*/
+			.and().rememberMe();
 		//super.configure(http);
 	}
 
 	/*MÃ©todo que serÃ¡ sobreescrito de WebSecurityConfigureAdapter*/
-	@Override protected void configure(
-			AuthenticationManagerBuilder auth) throws Exception 
+	@Override protected void configure(AuthenticationManagerBuilder auth) throws Exception 
 	{	/*Este mÃ©todo espera que passemos como parÃ¢metro um objeto do tipo userDetailsService, que Ã© nosso 
 		service, pois esta implementa um UserDetailService.*/
 		auth.userDetailsService(this.usuarioService)
