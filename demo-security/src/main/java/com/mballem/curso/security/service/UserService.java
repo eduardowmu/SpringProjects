@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -187,5 +188,25 @@ public class UserService implements UserDetailsService
 		 *faz de forma automática se fazermos apenas um setAtivo(true) do método da
 		 *classe*/
 		usuario.setAtivo(true);
+	}
+
+	@Transactional(readOnly = false)
+	public void pedidoRedefinicaoSenha(String email) throws MessagingException 
+	{	/*Será usado este método pois o mesmo precisa estar como ativo no cadastro*/
+		Usuario usuario = this.buscarPorEmailEAtivo(email)
+			.orElseThrow(() -> new UsernameNotFoundException("Usuário " + email
+					+ "não encontrado"));
+		
+		/*Gerando o código verificardor. Essa Classe randomica tem um método que é
+		 *alpha numérico, que recebe como parametro o numero de caracateres que
+		 *definirmos*/
+		String verificador = RandomStringUtils.randomAlphanumeric(6);
+		
+		/*configurando o codigo verificador do usuário. Assim iremos então realizar
+		 *o update no banco de dados.*/
+		usuario.setCodigoVerificador(verificador);
+		
+		/*Fazendo o envio de email para recuperação de senha*/
+		this.emailService.enviarPedidoRedefinicaoSenha(email, verificador);
 	}
 }

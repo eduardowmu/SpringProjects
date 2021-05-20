@@ -4,5 +4,5 @@ package com.mballem.curso.security.exception;
 @SuppressWarnings("serial")
 public class AccessDeniedException extends RuntimeException
 {	public AccessDeniedException(String msg) 
-	{super(msg);}	
+	{super(msg);}
 }

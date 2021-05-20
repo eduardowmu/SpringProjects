@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,8 +43,7 @@ public class UserController
 	
 	/*abrir lista de usuarios*/
 	@GetMapping("/lista")
-	public String listarUsuarios()
-	{return "usuario/lista";}
+	public String listarUsuarios() {return "usuario/lista";}
 	
 	/*listar usuarios na datatables (usuario.js - ajax table-usuarios)*/
 	@GetMapping("/datatables/server/usuarios")
@@ -105,15 +105,12 @@ public class UserController
 		//restringindo o acesso do ADMIN e ao mesmo tempo médico 
 		//ao perfil de usuário paciente. Aqui foi onde gerou a exceção
 		//de 500, quando que na verdade deveria ser 404
-		if(user.getPerfis().contains(
-				new Perfil(PerfilTipo.ADMIN.getCod()))
-				&& !user.getPerfis().contains(
-				new Perfil(PerfilTipo.MEDICO.getCod())))
+		if(user.getPerfis().contains(new Perfil(PerfilTipo.ADMIN.getCod()))
+				&& !user.getPerfis().contains(new Perfil(PerfilTipo.MEDICO.getCod())))
 		{return new ModelAndView("usuario/cadastro", "usuario", user);}
 		
 		//restringindo acesso de um medico
-		else if(user.getPerfis().contains(
-				new Perfil(PerfilTipo.MEDICO.getCod())))
+		else if(user.getPerfis().contains(new Perfil(PerfilTipo.MEDICO.getCod())))
 		{	/*Declarando um objeto de medico e precisaremos acessar
 		 	a service de médico. Lembrando que se já tivermos um ID, 
 		 	desse médico, será feito um update, mas senão, teremos um create*/
@@ -131,8 +128,7 @@ public class UserController
 		//requisição para a área de paciente. Iremos dizer para o
 		//ADMIN que não terá acesso a essa área. Para isso usaremos
 		//o metodo de acesso negado da HomeController
-		else if(user.getPerfis().contains(
-				new Perfil(PerfilTipo.PACIENTE.getCod())))
+		else if(user.getPerfis().contains(new Perfil(PerfilTipo.PACIENTE.getCod())))
 		{	ModelAndView mv = new ModelAndView("error");
 			//para o tipo ModelAndView, usamos o objeto e não atributo
 			mv.addObject("status", 403);
@@ -205,5 +201,40 @@ public class UserController
 		attr.addFlashAttribute("texto", "Parabéns, seu cadastro foi ativado!");
 		attr.addFlashAttribute("subtexto", "Já pode realizar seu login");
 		return "redirect:/login";
+	}
+	
+	/*abre a pagina de pedido de recuperação de senha. Esse método tem como função apenas abrir a página*/
+	@GetMapping("/p/redefinir/senha")
+	public String pedidoRedefinirSenha()
+	{return "usuario/pedido-recuperar-senha";}
+	
+	/*form de pedido de recuperação de senha. O parametro ModelMap é para que possamos responder com uma 
+	 *mensagem na página*/
+	@GetMapping("/p/recuperar/senha")
+	public String redefinirSenha(String email, ModelMap model) throws MessagingException
+	{	this.service.pedidoRedefinicaoSenha(email);
+		model.addAttribute("sucesso", "Sucesso! Você receberá um e-mail para redefinir sua senha.");
+		model.addAttribute("usuario", new Usuario(email));
+		return "usuario/recuperar-senha";
+	}
+	
+	/*salvar a nova senha via recuperação de senha. método que receberá a requisição do formulário com os 
+	 *dados de altaração de senha*/
+	@PostMapping("/p/nova/senha")
+	public String confirmacaoRedefinicaoSenha(Usuario usuario, ModelMap model)
+	{	/*Buscando do BD se o codigo verificado do usuário é o mesmo que o codigo enviado*/
+		Usuario u = this.service.pullByEmail(usuario.getEmail());
+		if(!usuario.getCodigoVerificador().equalsIgnoreCase(u.getCodigoVerificador()))
+		{	model.addAttribute("falha", "Código verificador não confere.");
+			return "usuario/recuperar-senha";
+		}
+		/*Limpando código verificador no BD*/
+		u.setCodigoVerificador(null);
+		/*editando a senha no banco de dados do usuario no formulário*/
+		this.service.editSenha(u, usuario.getSenha());
+		model.addAttribute("alerta", "sucesso");
+		model.addAttribute("titulo", "Senha redefinida!");
+		model.addAttribute("texto", "Você já pode logar no sistema.");
+		return "login";
 	}
 }
