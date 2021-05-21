@@ -205,8 +205,7 @@ public class UserController
 	
 	/*abre a pagina de pedido de recuperação de senha. Esse método tem como função apenas abrir a página*/
 	@GetMapping("/p/redefinir/senha")
-	public String pedidoRedefinirSenha()
-	{return "usuario/pedido-recuperar-senha";}
+	public String pedidoRedefinirSenha()	{return "usuario/pedido-recuperar-senha";}
 	
 	/*form de pedido de recuperação de senha. O parametro ModelMap é para que possamos responder com uma 
 	 *mensagem na página*/

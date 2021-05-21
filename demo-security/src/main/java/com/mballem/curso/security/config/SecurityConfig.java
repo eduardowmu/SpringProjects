@@ -1,12 +1,19 @@
 package com.mballem.curso.security.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import com.mballem.curso.security.domain.PerfilTipo;
 import com.mballem.curso.security.service.UserService;
@@ -14,8 +21,7 @@ import com.mballem.curso.security.service.UserService;
  *seguranÃ§a.*/
 @EnableGlobalMethodSecurity(prePostEnabled=true)
 @EnableWebSecurity
-public class SecurityConfig extends 
-	WebSecurityConfigurerAdapter
+public class SecurityConfig extends WebSecurityConfigurerAdapter
 {	//criado com a intensÃ£o de evitar de escrever STRINGS direto
 	private static final String ADMIN = PerfilTipo.ADMIN.getDesc();
 	private static final String MEDICO = PerfilTipo.MEDICO.getDesc();
@@ -34,7 +40,7 @@ public class SecurityConfig extends
 			.antMatchers("/webjars/**", "/css/**", "/image/**", 
 				"/js/**").permitAll()
 			//liberando a pagina HOME
-			.antMatchers("/", "/home")
+			.antMatchers("/", "/home", "/expired")
 			//significa que tal URI nÃ£o irÃ¡ precisar de
 			//autenticaÃ§Ã£o
 			.permitAll()
@@ -100,6 +106,32 @@ public class SecurityConfig extends
 			/*Configuração do remember-me, com validade de aproximadamente de 2 semanas.*/
 			.and().rememberMe();
 		//super.configure(http);
+		
+		/*Método que vai dizer para a configuração que é para o Spring olhar para a parte de gerenciamento
+		 *de sessão.*/
+		http.sessionManagement()
+			/*Indicando para a configuração quantos dispositivos serão capazes de manter a sessão conectados
+			 *simultaneamente*/
+			.maximumSessions(1)
+			/*Passar um parâmetro TRUE para que informe a configuração que quando estivermos logado, em um
+			 *dispositivo, não poderemos logar com outro*/
+			//.maxSessionsPreventsLogin(true)
+			/*indicando, para o primeiro acesso que não tem mais ação à primeira aplicação*/
+			.expiredUrl("/expired")
+			/*Permitindo a realização de login mesmo com uma sessão já ativa em um outro navegador*/
+			.maxSessionsPreventsLogin(false)
+			/*Método onde passamos um parametro do tipo SessionRegistry, que será o BEAN que criamos 
+			 *abaixo*/
+			.sessionRegistry(this.sessionRegistry());
+		
+		http.sessionManagement()
+			/*Esse método nos dará acesso à próxima operação que iremos usar.*/
+			.sessionFixation()
+			/*Esta cria uma nova sessão e valida a sessão que ja existia, porém como irá saber que tal
+			 *sessão já existia?*/
+			.newSession()
+			/*a nova sessão irá saber através dessa nova operação*/
+			.sessionAuthenticationStrategy(this.sessionAuthStrategy());
 	}
 
 	/*MÃ©todo que serÃ¡ sobreescrito de WebSecurityConfigureAdapter*/
@@ -113,5 +145,24 @@ public class SecurityConfig extends
 		 *a senha digitada, serÃ¡ necessÃ¡rio criptografar a senha para ver se essa criptografia Ã© igual aquela que 
 		 *temos no BD*/
 			.passwordEncoder(new BCryptPasswordEncoder());
-	}	
+	}
+	
+	/*Novo método que ficará responsável pela restrição de sessões simultâneas. A interface SessionRegistry,
+	 *do pacote org.springframework.security.core.session. Esse BEAN será responsável por passar para uma
+	 *outra configuração que faremos mais tarde a sessão que o spring possui referente a cada login que está
+	 *sendo feito na aplicação. Só que além disso precisamos criar uma espécie de filtro a partir de um listener
+	 *e portanto iremos criar um novo método, que também será um BEAN.*/
+	@Bean public SessionRegistry sessionRegistry()
+	{return new SessionRegistryImpl();}
+	
+	/*Com esse método estamos registrando um servlet na nossa aplicação e este que ficará responsável por cuidar
+	 *de todas as operações de login que estão sendo realizadas.*/
+	@Bean public ServletListenerRegistrationBean<?> servletListenerRegistrationBean()
+	{return new ServletListenerRegistrationBean<>(new HttpSessionEventPublisher());}
+	
+	/*Um BEAN indica que este método é gerenciado direto pelo Spring*/
+	@Bean public SessionAuthenticationStrategy sessionAuthStrategy()
+	{	/*retorna uma instancia que implementa essa interface, recebendo um objeto do tipo SessionRegistry*/
+		return new RegisterSessionAuthenticationStrategy(this.sessionRegistry());
+	}
 }
